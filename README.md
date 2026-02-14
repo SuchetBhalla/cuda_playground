@@ -94,17 +94,10 @@ Concurrency is possible.
 
 Time for synchronous data-transfer & execution: 3.027 msec
 
-Max. error: 1.0
-
-
 Time for asynchronous (v1) data-transfer & execution: 1.991 msec
-
-Max. error: 1.0
-
 
 Time for asynchronous (v2) data-transfer & execution: 1.824 msec
 
-Max. error: 1.0
 
 ### Information
 
