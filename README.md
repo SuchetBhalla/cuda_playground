@@ -100,26 +100,27 @@ Time required for data-transfer & execution,
 
 ### Information
 
-Operations on the device can be performed concurrently aka *overlapped*, e.g., data transfer (between the host & device) and a computation.
+Operations on the device can be performed concurrently aka *overlapped*. E.g., a computation & data transfer (between the host & device)
+
+Conditions which enable concurrency:
+1. the device has separate engines for: kernel execution & data transfer
+- This can be queried from the field *asyncEngineCount* of a struct *cudaDeviceProp*
+2. the operations (to be overlapped) belong to different, non-default streams
+3. the host memory involved is pinned memory
+
+**Background:**
 
 CUDA Streams: There is 1 default stream, and I can create more streams using the CUDA API.
 
 Difference:
-1. Default stream: Memcpy operations issued to the default stream, between the host and device are synchronizing aka blocking, i.e., the CPU waits.
-2. Non-default stream: the operations are non-blocking, thus the CPU is available to run processes.
+1. Default stream: *Memcpy* operations issued to the default stream, between the host and device are synchronous aka blocking, i.e., the CPU waits for the data-transfer to complete.
+2. Non-default stream: all operations are non-blocking, thus the CPU is available to run processes.
 
 Synchronizing non-default streams: APIs exist to synchronize
-1. a stream to a specific event in another stream (even if on a different device)
-2. the host to a specific event (in a stream)
-3. the host to a specific stream; when the issued operations complete.
-- This can be either blocking or not.
-4. the host to all streams; when the issued operations complete
-
-
-Conditions which enable concurrency:
-1. the device has separate engines for: kernel execution & data transfer
-- This can be queried from ~~either the field *deviceOverlap* of a struct *cudaDeviceProp*,~~
-2. the operations (to be overlapped) belong to different, non-default streams
-3. the host memory involved is pinned memory
+1. a stream to an event in another stream (even if it runs on a different device)
+2. the host to an event (in a stream)
+3. the host to a stream; when all issued operations complete.
+- This can either be blocking or not.
+4. the host to all streams; when all issued operations complete
 
 **reference**: [How to Overlap Data Transfers in CUDA C/C++](https://developer.nvidia.com/blog/how-overlap-data-transfers-cuda-cc/)
