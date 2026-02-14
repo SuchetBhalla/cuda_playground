@@ -92,11 +92,10 @@ provided bank conflicts do not occur.
 Concurrency is possible.
 - Engine count: 3
 
-Time for synchronous data-transfer & execution: 3.027 msec
-
-Time for asynchronous (v1) data-transfer & execution: 1.991 msec
-
-Time for asynchronous (v2) data-transfer & execution: 1.824 msec
+Time required for data-transfer & execution,
+1. synchronous (baseline): 3.027 msec
+2. asynchronous (v1): 1.991 msec
+3. asynchronous (v2): 1.824 msec
 
 
 ### Information
