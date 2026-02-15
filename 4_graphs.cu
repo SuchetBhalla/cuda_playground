@@ -73,12 +73,25 @@ float errorCheck(float *hout, float *hin, int n){
   return maxError;
 }
 
-int main(){
+int main(int argc, char **argv){
+
+  // pretty printing
+  cout << "Benchmarking: kernel execution + synchronization overhead b/w the Host & Device\n";
+  cout << "Array size: " << SIZE << "\n";
+  cout << "Grid: " << BLOCKS << " blocks, " << THREADS << " threads/block\n";
 
   // init
-  size_t bytes= SIZE * sizeof(float);
+  int devId= 0;
+  if (argc > 1)
+    devId= atoi(argv[1]);
+  cudaSetDevice(devId);
+  // display device's properties
+  cudaDeviceProp prop;
+  cudaGetDeviceProperties(&prop, devId);
+  printf("Device : %s\n\n", prop.name);
 
   // allocate memory
+  size_t bytes= SIZE * sizeof(float);
   float
     *hin= new float[SIZE],
     *hout, *din, * dout;
@@ -97,13 +110,6 @@ int main(){
   // 2. array 'din'
   initializeArray<<<BLOCKS, THREADS>>>(din, 1.0f, SIZE);
 
-  // pretty printing
-  cout << "Benchmarking launch + synchronization overhead\n";
-  cout << "Array size: " << SIZE << " elements\n";
-  cout << "Grid: " << BLOCKS << " blocks, "
-       << THREADS << " threads/block\n\n";
-
-
   // synchronize after each kernel launch
   auto start= chrono::steady_clock::now();
   for(int_fast16_t i= 0; i < STEPS; ++i)
@@ -113,13 +119,13 @@ int main(){
     }
   auto end= chrono::steady_clock::now();
   chrono::duration<float, std::micro> time= end-start;
-  cout << "[Per-kernel sync] Avg host time per kernel launch + stream sync: "
-     << time.count() / (STEPS * NSYNC) << " us\n";
+  cout << "[Per-kernel sync] Avg host time per kernel exec + sync: "
+     << time.count() / (STEPS * NSYNC) << " usec\n";
   float baseline= time.count();
 
   // error check
   cudaMemcpy(hout, dout, bytes, cudaMemcpyDeviceToHost);
-  cout << "Max. absolute error: " << errorCheck(hout, hin, SIZE) << "\n";
+  cout << "Max. absolute error: " << errorCheck(hout, hin, SIZE) << "\n\n";
 
   // operations in a stream complete in the sequence, they were launched
   start= chrono::steady_clock::now();
@@ -131,13 +137,13 @@ int main(){
   }
   end= chrono::steady_clock::now();
   time= end-start;
-  cout << "[Batched sync] Avg host time per kernel ("
-     << NSYNC << " launches per sync): "
-     << time.count() / (STEPS * NSYNC) << " us\n";
+  cout << "[Batched sync] Avg host time per stream exec + sync ("
+     << NSYNC << " kernel launches per sync): "
+     << time.count() / (STEPS * NSYNC) << " usec\n";
 
   // error check
   cudaMemcpy(hout, dout, bytes, cudaMemcpyDeviceToHost);
-  cout << "Max. absolute error: " << errorCheck(hout, hin, SIZE) << "\n";
+  cout << "Max. absolute error: " << errorCheck(hout, hin, SIZE) << "\n\n";
 
   // create and launch a graph
   cudaGraph_t graph;
@@ -159,12 +165,12 @@ int main(){
   }
   end= chrono::steady_clock::now();
   time= end-start;
-  cout << "[CUDA Graph] Avg host time per kernel ("
+  cout << "[CUDA Graph] Avg host time per graph exec + sync ("
      << NSYNC << " kernels per graph launch): "
-     << time.count() / (STEPS * NSYNC) << " us\n";
+     << time.count() / (STEPS * NSYNC) << " usec\n";
   // error check
   cudaMemcpy(hout, dout, bytes, cudaMemcpyDeviceToHost);
-  cout << "Max. absolute error: " << errorCheck(hout, hin, SIZE) << "\n";
+  cout << "Max. absolute error: " << errorCheck(hout, hin, SIZE) << "\n\n";
   float graphTime= time.count();
 
   cout << "Graph speedup over per-kernel sync: " << baseline / graphTime << "x\n";
