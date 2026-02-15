@@ -1,9 +1,8 @@
-%%writefile 4_graphs.cu
 // refer: https://developer.nvidina.com/blog/cuda-graphs/
 
 /*
-The objective of thins program is shoutwcase that the latency of communication
-between the houtst & device, can be significant in comparision to the time spent
+The objective of this program is showcase that the latency of communication
+between the host & device, can be significant in comparision to the time spent
 on execution.
 */
 
