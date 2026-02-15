@@ -34,12 +34,13 @@ references:
 #include <stdio.h>
 #include <assert.h>
 
-// global variables
-const int COLS = 1024;
-const int ROWS= 1024;
-const int TILE_DIM= 32;
-const int BLOCK_ROWS= 8;
-const int NUM_REPS= 100;
+// global variables (but local to this translation unit)
+static const int
+  COLS = 1024,
+  ROWS= 1024,
+  TILE_DIM= 32,
+  BLOCK_ROWS= 8,
+  NUM_REPS= 100;
 
 // kernels
 __global__ void copy(float *op, const float *ip){

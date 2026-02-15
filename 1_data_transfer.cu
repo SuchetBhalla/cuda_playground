@@ -73,17 +73,17 @@ void profile_copying(float *hi, float *ho, float *d, size_t n, const char *desc)
   cudaCheck(cudaMemcpy(d, hi, bytes, cudaMemcpyHostToDevice));
   cudaCheck(cudaEventRecord(stop, 0));
   cudaCheck(cudaEventSynchronize(stop));
-  float sec;
-  cudaCheck(cudaEventElapsedTime(&sec, start, stop));
-  printf("\tBandwidth (GB/sec), host to device: %.2f\n", bytes * 1e-6 / sec);
+  float msec;
+  cudaCheck(cudaEventElapsedTime(&msec, start, stop));
+  printf("\tBandwidth (GB/sec), host to device: %.2f\n", bytes * 1e-6 / msec);
 
   // copy from device to host
   cudaCheck(cudaEventRecord(start, 0));
   cudaCheck(cudaMemcpy(ho, d, bytes, cudaMemcpyDeviceToHost));
   cudaCheck(cudaEventRecord(stop, 0));
   cudaCheck(cudaEventSynchronize(stop));
-  cudaCheck(cudaEventElapsedTime(&sec, start, stop));
-  printf("\tBandwidth (GB/sec), device to host: %.2f\n", bytes * 1e-6 / sec);
+  cudaCheck(cudaEventElapsedTime(&msec, start, stop));
+  printf("\tBandwidth (GB/sec), device to host: %.2f\n", bytes * 1e-6 / msec);
 
   // validate copying
   for(size_t i= 0; i < n; ++i)
@@ -136,9 +136,9 @@ int main(){
   profile_copying(hi_pinned, ho_pinned, d, size, "Pinned");
 
     // cleanup
-    cudaFree(d);
-    cudaFreeHost(hi_pinned);
-    cudaFreeHost(ho_pinned);
+    cudaCheck(cudaFree(d));
+    cudaCheck(cudaFreeHost(hi_pinned));
+    cudaCheck(cudaFreeHost(ho_pinned));
     free(hi_pageable);
     free(ho_pageable);
 

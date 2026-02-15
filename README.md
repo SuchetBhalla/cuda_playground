@@ -64,11 +64,11 @@ Block size: 32 x 8 x 1
 
 | Routine | Bandwidth (GB/sec) |
 | --- | --- |
-| copy | 212.45|
-| copysram | 227.54|
-| transposeNaive | 46.68|
-| transposeSubOptima | 78.59|
-| transposeOptima | 204.18|
+|copy|216.83|
+|copysram|230.92|
+|transposeNaive|64.47|
+|transposeSubOptima|106.78|
+|transposeOptima|206.45|
 
 ### Conclusion
 The optimal way to read from & write to global memory, is to access contiguous addresses.
@@ -87,16 +87,10 @@ provided bank conflicts do not occur.
 
 ### Results
 
-**Device:** Tesla T4
-
-Concurrency is possible.
-- Engine count: 3
-
 Time required for data-transfer & execution,
 1. synchronous (baseline): 3.027 msec
 2. asynchronous (v1): 1.991 msec
 3. asynchronous (v2): 1.824 msec
-
 
 ### Information
 
