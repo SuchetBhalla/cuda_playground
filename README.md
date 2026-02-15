@@ -118,3 +118,25 @@ Synchronizing non-default streams: APIs exist to synchronize
 4. the host to all streams; when all issued operations complete
 
 **reference**: [How to Overlap Data Transfers in CUDA C/C++](https://developer.nvidia.com/blog/how-overlap-data-transfers-cuda-cc/)
+
+## 4_graphs.cu
+
+### Results
+
+**Benchmarking:** kernel execution + synchronization overhead b/w the Host & Device
+
+Array size: 1048576
+
+Grid: 160 blocks, 256 threads/block
+
+Device : Tesla T4
+
+[Per-kernel sync] Avg host time per kernel exec + sync: 43.56 usec
+
+[Batched sync] Avg host time per stream exec + sync (50 kernels/sync): 38.49 usec
+
+[CUDA Graph] Avg host time per graph exec + sync (50 kernels/graph): 37.57 usec
+
+Graph speedup over per-kernel sync: 1.15945x
+
+**refer:** [Getting Started with CUDA Graphs](https://developer.nvidia.com/blog/cuda-graphs/)
